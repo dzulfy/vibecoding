@@ -44,8 +44,13 @@ export const loginUser = async (payload: any) => {
     throw new Error("Email atau password salah");
   }
 
+  const foundUser = user[0];
+  if (!foundUser) {
+    throw new Error("Email atau password salah");
+  }
+
   // 2. Compare password
-  const isPasswordMatch = await bcrypt.compare(password, user[0].password);
+  const isPasswordMatch = await bcrypt.compare(password, foundUser.password);
   if (!isPasswordMatch) {
     throw new Error("Email atau password salah");
   }
@@ -56,7 +61,7 @@ export const loginUser = async (payload: any) => {
   // 4. Create session
   await db.insert(sessions).values({
     token,
-    userId: user[0].id,
+    userId: foundUser.id,
   });
 
   return { data: token };
